@@ -1,11 +1,11 @@
 import { Stack } from "expo-router";
-import "../global.css";
+import "../../global.css";
 
 export default function Layout() {
     return (
         <Stack screenOptions={{
             headerShown: false,
-            animation: 'fade'
+            animation: 'slide_from_bottom',
         }} />
     );
 };

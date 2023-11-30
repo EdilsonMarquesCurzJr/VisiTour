@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { Button, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-
+import { Link } from 'expo-router';
+import { ModalAccount } from '../ModalAccount/Modal';
+import { StateButton } from '../StateButton/StateButton';
 export const Login = () => {
     const [texto, setTexto] = React.useState('');
     const [senha, setSenha] = React.useState('');
-
+    const [modalVisibility, setModalVisibility] = useState(false);
+    const changeModalState = () => {
+        setModalVisibility(true);
+    }
     return (
         <ImageBackground
             source={require('../../assets/images/azulejos-background.jpg')} // Adicione o caminho da sua imagem de fundo
@@ -31,7 +36,13 @@ export const Login = () => {
                 <Pressable style={styles.button}>
                     <Text style={styles.textButton}>Entrar</Text>
                 </Pressable>
-                <Text style={styles.trocarOuCriar}>Trocar ou criar conta</Text>
+                {/* <Text style={styles.trocarOuCriar}>Trocar ou criar conta</Text> */}
+                <StateButton onPress={changeModalState}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }} className="text-black underline">
+                        Trocar ou criar conta
+                    </Text>
+                </StateButton>
+                <ModalAccount modalVisibility={modalVisibility} setModalVisibility={setModalVisibility} />
             </View>
 
         </ImageBackground>
@@ -43,6 +54,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#ffffff56'
     },
     textLogin: {
         fontWeight: '900',
@@ -71,6 +83,8 @@ const styles = StyleSheet.create({
     },
     textInput: {
         marginLeft: 30,
+        fontWeight: '400',
+        fontSize: 16
     },
     button: {
         backgroundColor: "#3F3F3F",
@@ -83,9 +97,13 @@ const styles = StyleSheet.create({
         color: "#FFFF",
         textAlign: 'center', // Adicione esta linha para centralizar horizontalmente
         textAlignVertical: 'center', // Adicione esta linha para centralizar verticalmente
+        fontWeight: '700',
+        fontSize: 16
     },
     trocarOuCriar: {
-        marginTop: 40,
-        textDecorationLine: 'underline'
+        textDecorationLine: 'underline',
+        fontWeight: 'bold',
+        fontSize: 18,
+        color: '#fff'
     },
 });
