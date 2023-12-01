@@ -3,6 +3,7 @@ import { Button, ImageBackground, Pressable, StyleSheet, Text, TextInput, View }
 import { Link } from 'expo-router';
 import { ModalAccount } from '../ModalAccount/Modal';
 import { StateButton } from '../StateButton/StateButton';
+import { RedirectButton } from '../RedirectButton/RedirectButton';
 export const Login = () => {
     const [texto, setTexto] = React.useState('');
     const [senha, setSenha] = React.useState('');
@@ -33,9 +34,14 @@ export const Login = () => {
                     />
                 </View>
 
-                <Pressable style={styles.button}>
+                {/* <Pressable style={styles.button}>
                     <Text style={styles.textButton}>Entrar</Text>
-                </Pressable>
+                </Pressable> */}
+                <RedirectButton href="/home" asChild>
+                    <Pressable style={styles.button}>
+                        <Text style={styles.textButton}>Entrar</Text>
+                    </Pressable>
+                </RedirectButton>
                 {/* <Text style={styles.trocarOuCriar}>Trocar ou criar conta</Text> */}
                 <StateButton onPress={changeModalState}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }} className="text-black underline">
