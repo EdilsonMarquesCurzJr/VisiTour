@@ -5,6 +5,7 @@ import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Hamb } from "../Hamb/Hamb";
 import { Link } from "expo-router";
+import { StateButton } from "../StateButton/StateButton";
 const Stack = createStackNavigator();
 
 const CustomHeaderButton = (props) => (
@@ -13,7 +14,7 @@ const CustomHeaderButton = (props) => (
 
 const MenuScreen = ({ navigation }) => {
   const [texto, setTexto] = useState("");
-  const [hamb, setHamb] = React.useState(false)
+  const [hamb, setHamb] = React.useState(true)
 
   return (
     <View style={styles.container}>
@@ -31,61 +32,56 @@ const MenuScreen = ({ navigation }) => {
 
 export const Menu = () => {
   const [texto, setTexto] = useState("");
-  const [hamb, setHamb] = useState(false)
+ 
+  const [hambVisibility, setHambVisibility] = React.useState(false);
+
+  const openHamb = () => {
+    setHambVisibility(true);
+  };
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: "#808080",
-        },
-        headerTintColor: "#fff",
-        headerTitleStyle: {
-          display: "none", // Oculta o título do cabeçalho
-        },
-      }}
-    >
-
-      <Stack.Screen
-        name="Menu"
-        component={MenuScreen}
-        options={({ navigation }) => ({
-          title: "", // Definindo o título como uma string vazia para remover completamente
-          headerLeft: () => (
-            <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-              <Item
-                title="Pesquisa"
-                iconName="search"
-                onPress={() => {
-                  setHamb(!hamb)
-                  console.log("hamb:", hamb); // Verifica o valor de hamb no console
-
-                }}
-              />
-              <Image source={require("../../assets/3line.png")} style={styles.imageIcon} />
-            </HeaderButtons>
-          ),
-          headerRight: () => (
-            <View style={[styles.headerButtonContainer, { marginRight: 15 }]}>
-              <TextInput
-                style={styles.searchTextInput}
-                placeholder="busca"
-                placeholderTextColor="white"
-              />
-
-              <Ionicons name="search" size={23} color="white" />
-            </View>
-          ),
-        })}
-
-      />
-      {hamb && <Hamb />}
-
-
-    </Stack.Navigator>
+    <>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#808080",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            display: "none", // Oculta o título do cabeçalho
+          },
+        }}
+      >
+        <Stack.Screen
+          name="Menu"
+          component={MenuScreen}
+          options={({ navigation }) => ({
+            title: "",
+            headerLeft: () => (
+              <StateButton style={styles.buttonIcon} onPress={openHamb}>
+                <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+                  <Item title="Pesquisa" iconName="search" onPress={openHamb} />
+                  <Image source={require("../../assets/3line.png")} style={styles.imageIcon} />
+                </HeaderButtons>
+              </StateButton>
+            ),
+            headerRight: () => (
+              <View style={[styles.headerButtonContainer, { marginRight: 15 }]}>
+                <TextInput
+                  style={styles.searchTextInput}
+                  placeholder="busca"
+                  placeholderTextColor="white"
+                />
+                <Ionicons name="search" size={23} color="white" />
+              </View>
+            ),
+          })}
+        />
+      </Stack.Navigator>
+      <Hamb HambVisibility={hambVisibility} setHambVisibility={setHambVisibility} />
+    </>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -115,5 +111,8 @@ const styles = StyleSheet.create({
     color: "white",
     marginRight: 4,
   },
+  buttonIcon:{
+    
+  }
 });
 
