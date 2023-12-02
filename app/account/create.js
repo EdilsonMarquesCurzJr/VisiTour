@@ -5,7 +5,7 @@ import Input from "../../components/Input/input";
 import { RedirectButton } from "../../components/RedirectButton/RedirectButton";
 import { StateButton } from "../../components/StateButton/StateButton";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
-import { validate } from "react-native-web/dist/cjs/exports/StyleSheet/validate";
+import { router } from "expo-router";
 export default function CreateAccountPage() {
     const [email, setEmail] = useState('');
     const [nome, setNome] = useState('');
@@ -47,27 +47,29 @@ export default function CreateAccountPage() {
     }, [senha, email, senhaConfirm]);
 
     const validateData = () => {
-        if (!isEmailValid === true) {
-            setIsEmailValid(false);
-            setIsEmailValidLabel('Email inválido');
-            return;
-        }
+        // if (!isEmailValid === true) {
+        //     setIsEmailValid(false);
+        //     setIsEmailValidLabel('Email inválido');
+        //     return;
+        // }
 
 
-        if (senhaConfirm.length === 0) {
-            setIsSenhaDiff(true);
-            setIsSenhaDiffLabel('Este campo é obrigatório');
-            return;
-        }
-        if (senhaConfirm !== senha) {
-            setIsSenhaValida(false);
-            setSenhaValidaLabel('As senhas estão diferentes');
-            setSenhaConfirm('');
-            return;
-        }
-        if (isSenhaValida === true) {
-            console.log("Validado");
-        }
+        // if (senhaConfirm.length === 0) {
+        //     setIsSenhaDiff(true);
+        //     setIsSenhaDiffLabel('Este campo é obrigatório');
+        //     return;
+        // }
+        // if (senhaConfirm !== senha) {
+        //     setIsSenhaValida(false);
+        //     setSenhaValidaLabel('As senhas estão diferentes');
+        //     setSenhaConfirm('');
+        //     return;
+        // }
+        // if (isSenhaValida === true) {
+        //     console.log("Validado");
+        // }
+        router.push('/account/preferences');
+        console.log("Teste");
     }
 
     return (
