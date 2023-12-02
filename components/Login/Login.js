@@ -43,8 +43,8 @@ export const Login = () => {
                     </Pressable>
                 </RedirectButton>
                 {/* <Text style={styles.trocarOuCriar}>Trocar ou criar conta</Text> */}
-                <StateButton onPress={changeModalState}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }} className="text-black underline">
+                <StateButton onPress={changeModalState} style={styles.trocarOuCriarButton}>
+                    <Text style={styles.trocarOuCriarText} className="text-black underline">
                         Trocar ou criar conta
                     </Text>
                 </StateButton>
@@ -106,10 +106,17 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 16
     },
-    trocarOuCriar: {
+    trocarOuCriarText: {
         textDecorationLine: 'underline',
         fontWeight: 'bold',
         fontSize: 18,
-        color: '#fff'
+        color: '#031211',
+        textShadowColor: '#fff',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 2
     },
+    trocarOuCriarButton: {
+        position: 'absolute',
+        bottom: 30
+    }
 });

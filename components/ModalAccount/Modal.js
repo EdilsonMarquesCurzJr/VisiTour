@@ -29,7 +29,7 @@ export const ModalAccount = React.forwardRef(({ modalVisibility, setModalVisibil
                             <Text style={styles.buttonText} className="text-black">Trocar Conta</Text>
                         </Pressable>
                     </RedirectButton>
-                    <StateButton onPress={() => setModalVisibility(false)}>
+                    <StateButton style={styles.buttonReturn} onPress={() => setModalVisibility(false)}>
                         <Text style={styles.buttonText} className="text-white">Voltar</Text>
                     </StateButton>
                 </View>
@@ -53,6 +53,9 @@ const styles = StyleSheet.create({
     },
     ModalHeader: {
         marginBottom: 16
+    },
+    buttonReturn: {
+        marginTop: 10
     }
 })
 export default ModalAccount;
