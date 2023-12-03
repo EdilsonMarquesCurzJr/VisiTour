@@ -110,6 +110,9 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         fontWeight: 'bold',
         fontSize: 18,
-        color: '#fff'
+        color: '#031211',
+        textShadowColor: '#fff',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 2
     },
 });
