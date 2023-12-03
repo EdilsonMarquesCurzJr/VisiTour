@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
+import { View, Text, Modal, Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
-
+import { Link, useNavigation } from "expo-router";
 
 export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...props }, ref) => {
+    const navigation = useNavigation();  // Use o hook dentro do componente funcional
 
     return (
         <Modal
@@ -29,10 +29,14 @@ export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...pr
                         <Ionicons name="md-person" size={20} />
                         <Text>Conta</Text>
                     </View>
-                    <View style={styles.optionIcons}>
-                        <Ionicons name="md-person" size={20} />
-                        <Text>FeedBack</Text>
-                    </View>
+                    <Link href="/Feed">
+                    {/* <TouchableOpacity > */}
+                        <View style={styles.optionIcons}>
+                            <Ionicons name="md-person" size={20} />
+                            <Text>FeedBack</Text>
+                        </View>
+                    {/* </TouchableOpacity> */}
+                    </Link>
                     <View style={styles.optionIcons}>
                         <Ionicons name="exit" size={20} />
                         <Text>Sair</Text>
