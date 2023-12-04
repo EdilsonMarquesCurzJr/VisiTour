@@ -14,12 +14,12 @@ export default function CreateAccountPage() {
 
     const [isSenhaValida, setIsSenhaValida] = useState(null);
     const [senhaValidaLabel, setSenhaValidaLabel] = useState(null);
-
     const [isEmailValid, setIsEmailValid] = useState(null);
     const [isEmailValidLabel, setIsEmailValidLabel] = useState(null)
     const [isSenhaDiff, setIsSenhaDiff] = useState(null);
     const [isSenhaDiffLabel, setIsSenhaDiffLabel] = useState(null);
-
+    const [isNomeValid, setIsNomeValid] = useState(null);
+    const [isNomeValidLabel, setIsNomeValidLabel] = useState(null);
     useEffect(() => {
         var senhaLength = senha.length;
         if (senhaLength > 0 && senhaLength < 8) {
@@ -43,16 +43,21 @@ export default function CreateAccountPage() {
             setIsEmailValid(null);
             setIsEmailValidLabel(null);
         }
+        setIsNomeValid(null);
         setIsSenhaDiff(null);
-    }, [senha, email, senhaConfirm]);
+    }, [senha, email, nome]);
 
     const validateData = () => {
+        // if (nome.length === 0) {
+        //     setIsNomeValid(false);
+        //     setIsNomeValidLabel('Campo obrigatório');
+        //     return
+        // }
         // if (!isEmailValid === true) {
         //     setIsEmailValid(false);
         //     setIsEmailValidLabel('Email inválido');
         //     return;
         // }
-
 
         // if (senhaConfirm.length === 0) {
         //     setIsSenhaDiff(true);
@@ -65,26 +70,22 @@ export default function CreateAccountPage() {
         //     setSenhaConfirm('');
         //     return;
         // }
-        // if (isSenhaValida === true) {
-        //     console.log("Validado");
-        // }
-        router.push('/account/preferences');
-        console.log("Teste");
+        router.replace('/account/preferences');
     }
 
     return (
         <View style={styles.container}>
 
-            <RedirectButton href="/" asChild>
+            <RedirectButton href="/" asChild replace={true}>
                 <Pressable style={styles.returnButton}>
                     <AntDesign name="arrowleft" size={30} color="black" />
                 </Pressable>
             </RedirectButton>
             <Text style={styles.title}>Cadastro</Text>
-            <Input label="Nome" value={nome} onChangeText={setNome} placeholder="Informe seu nome" />
-            <Input label="Email" value={email} onChangeText={setEmail} placeholder="Digite seu email" invalidLabel={isEmailValid === false ? isEmailValidLabel : null} />
-            <PasswordInput label="Senha" value={senha} onChangeText={setSenha} placeholder="Digite uma senha" invalidLabel={!isSenhaValida === true ? senhaValidaLabel : null} />
-            <PasswordInput value={senhaConfirm} onChangeText={setSenhaConfirm} hasShow={false} placeholder="Confirme sua senha" invalidLabel={isSenhaDiff === true ? isSenhaDiffLabel : null} />
+            <Input label="Nome" value={nome} onChangeText={setNome} placeholder="Informe seu nome" invalidLabel={isNomeValid === false ? isNomeValidLabel : null} />
+            <Input label="Email" value={email} onChangeText={setEmail} placeholder="Digite seu email" invalidLabel={isEmailValid === false ? isEmailValidLabel : null} autoCapitalize="none" keyboardType='email-address' />
+            <PasswordInput label="Senha" value={senha} onChangeText={setSenha} placeholder="Digite uma senha" invalidLabel={!isSenhaValida === true ? senhaValidaLabel : null} autoCapitalize="none" />
+            <PasswordInput value={senhaConfirm} onChangeText={setSenhaConfirm} hasShow={false} placeholder="Confirme sua senha" invalidLabel={isSenhaDiff === true ? isSenhaDiffLabel : null} autoCapitalize="none" />
 
             <StateButton style={styles.createButton} onPress={validateData}>
                 <Text style={styles.createButtonText}>
