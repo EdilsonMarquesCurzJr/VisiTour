@@ -3,6 +3,7 @@ import { Login } from "../components/Login/Login";
 import { Menu } from "../components/Menu/Menu";
 import { FeedBack } from '../components/FeedBack/FeedBack';
 import { Link, Stack } from 'expo-router';
+import { FeedMensag } from '../components/FeedBack/FeedMensag';
 export default function App() {
   return (
     <Login />

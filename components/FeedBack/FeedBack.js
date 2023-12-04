@@ -3,24 +3,32 @@ import React from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Link, useNavigation } from "expo-router";
 import { RedirectButton } from "../RedirectButton/RedirectButton";
+
 export const FeedBack = () => {
+    
+
     return (
         <>
             
             <View style={styles.container}>
-            <RedirectButton href="/home" asChild style ={styles.arrouBack}>
-                <TouchableOpacity>
+            
+            <Link href="/home" style={styles.arrouBack}>
+                {/* <TouchableOpacity> */}
                     <Ionicons  name="arrow-back" size={30}/>
-                </TouchableOpacity>
-            </RedirectButton>
+                {/* </TouchableOpacity> */}
+            </Link>
                 <Text style={styles.textFeed}>Com o que você gostaria de ajudar</Text>
                 <View style={styles.button}>
-                    <TouchableOpacity style={styles.buttonFeed}>
-                        <Text>Feedback de melhoria</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.buttonFeed}>
+                    <Link href="/Feed/FeedArea"style={styles.buttonFeed}>
+                        {/* <TouchableOpacity > */}
+                            <Text>Feedback de melhoria</Text>
+                        {/* </TouchableOpacity> */}
+                    </Link>
+                    <Link href=''style={styles.buttonFeed}>
+                    <TouchableOpacity>
                         <Text>Contribuir com o mapa</Text>
                     </TouchableOpacity>
+                    </Link>
                 </View>
             </View>
         </>
@@ -48,7 +56,8 @@ const styles = StyleSheet.create({
         backgroundColor:"gray",
         padding:10,
         borderRadius: 25,
-        alignItems: 'center',
+        textAlign: 'center', 
+        textAlignVertical: 'center',
        
     },
     arrouBack:{

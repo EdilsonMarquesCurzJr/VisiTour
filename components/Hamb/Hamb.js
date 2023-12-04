@@ -29,7 +29,7 @@ export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...pr
                         <Ionicons name="md-person" size={20} />
                         <Text>Conta</Text>
                     </View>
-                    <Link href="/Feed">
+                    <Link href="/Feed/FeedOptions">
                     {/* <TouchableOpacity > */}
                         <View style={styles.optionIcons}>
                             <Ionicons name="md-person" size={20} />
