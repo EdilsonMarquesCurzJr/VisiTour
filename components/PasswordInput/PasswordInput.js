@@ -43,21 +43,23 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: 227,
+        width: "100%",
         borderRadius: 25,
         backgroundColor: '#fff'
     },
     input: {
         fontSize: 16,
         paddingVertical: 15,
-        paddingLeft: 20,
-        paddingRight: 5,
-        borderRadius: 25,
-        width: 195,
+        paddingHorizontal: 20,
+        width: "90%",
     },
     icon: {
-        padding: 2,
-        borderRadius: 25
+        position: 'absolute',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        right: 10,
+        // backgroundColor: '#165',
 
     },
     inputLabel: {

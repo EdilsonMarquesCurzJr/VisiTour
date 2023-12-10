@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Pressable, StyleSheet, View, Text } from "react-native";
+import { Pressable, StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
 import Input from "../../components/Input/input";
 import { RedirectButton } from "../../components/RedirectButton/RedirectButton";
 import { StateButton } from "../../components/StateButton/StateButton";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import { router } from "expo-router";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function CreateAccountPage() {
     const [email, setEmail] = useState('');
     const [nome, setNome] = useState('');
@@ -20,6 +22,9 @@ export default function CreateAccountPage() {
     const [isSenhaDiffLabel, setIsSenhaDiffLabel] = useState(null);
     const [isNomeValid, setIsNomeValid] = useState(null);
     const [isNomeValidLabel, setIsNomeValidLabel] = useState(null);
+    const [isCreating, setIsCreating] = useState(false);
+
+    const apiURL = 'http://192.168.1.12:5000/';
     useEffect(() => {
         var senhaLength = senha.length;
         if (senhaLength > 0 && senhaLength < 8) {
@@ -46,31 +51,67 @@ export default function CreateAccountPage() {
         setIsNomeValid(null);
         setIsSenhaDiff(null);
     }, [senha, email, nome]);
+    const createAccount = async () => {
+        const isCredenciaisValid = validateData();
+        if (isCredenciaisValid) {
+            setIsCreating(true);
+            const app = axios.create({
+                baseURL: apiURL
+            });
+            const dataSend = {
+                name: nome,
+                email,
+                password: senha
+            }
+            try {
+                const response = await app.post('/user-create', dataSend);
+                const { status, data } = response;
+                if (status === 201) {
+                    const token = data.token
+                    const user = data.user;
+                    AsyncStorage.setItem('login_token', token);
+                    AsyncStorage.setItem('user_email', user.email);
+                    AsyncStorage.setItem('user_id', String(user.id));
+                    router.replace({
+                        pathname: '/account/preferences',
+                        params: user
+                    });
+                }
+            } catch (error) {
+                const errorData = error.response.data;
+                if (errorData.type === 'db_process') {
+                    console.error('Erro ao criar a conta')
+                }
+            }
+
+        }
+        setIsCreating(false);
+    };
 
     const validateData = () => {
-        // if (nome.length === 0) {
-        //     setIsNomeValid(false);
-        //     setIsNomeValidLabel('Campo obrigatório');
-        //     return
-        // }
-        // if (!isEmailValid === true) {
-        //     setIsEmailValid(false);
-        //     setIsEmailValidLabel('Email inválido');
-        //     return;
-        // }
+        if (nome.length === 0) {
+            setIsNomeValid(false);
+            setIsNomeValidLabel('Campo obrigatório');
+            return false;
+        }
+        if (!isEmailValid === true) {
+            setIsEmailValid(false);
+            setIsEmailValidLabel('Email inválido');
+            return false;
+        }
 
-        // if (senhaConfirm.length === 0) {
-        //     setIsSenhaDiff(true);
-        //     setIsSenhaDiffLabel('Este campo é obrigatório');
-        //     return;
-        // }
-        // if (senhaConfirm !== senha) {
-        //     setIsSenhaValida(false);
-        //     setSenhaValidaLabel('As senhas estão diferentes');
-        //     setSenhaConfirm('');
-        //     return;
-        // }
-        router.replace('/account/preferences');
+        if (senhaConfirm.length === 0) {
+            setIsSenhaDiff(true);
+            setIsSenhaDiffLabel('Este campo é obrigatório');
+            return false;
+        }
+        if (senhaConfirm !== senha) {
+            setIsSenhaValida(false);
+            setSenhaValidaLabel('As senhas estão diferentes');
+            setSenhaConfirm('');
+            return false;
+        }
+        return true;
     }
 
     return (
@@ -87,11 +128,19 @@ export default function CreateAccountPage() {
             <PasswordInput label="Senha" value={senha} onChangeText={setSenha} placeholder="Digite uma senha" invalidLabel={!isSenhaValida === true ? senhaValidaLabel : null} autoCapitalize="none" />
             <PasswordInput value={senhaConfirm} onChangeText={setSenhaConfirm} hasShow={false} placeholder="Confirme sua senha" invalidLabel={isSenhaDiff === true ? isSenhaDiffLabel : null} autoCapitalize="none" />
 
-            <StateButton style={styles.createButton} onPress={validateData}>
-                <Text style={styles.createButtonText}>
-                    Criar
-                </Text>
-            </StateButton>
+            {isCreating === true ? (
+                <View style={styles.createLoader}>
+                    <ActivityIndicator size="large" color="#fff" />
+                </View>
+            ) : (
+                <StateButton style={styles.createButton} onPress={createAccount}>
+                    <Text style={styles.createButtonText}>
+                        Criar
+                    </Text>
+                </StateButton>
+
+            )}
+
 
         </View>
     );
@@ -127,5 +176,13 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: '600',
+    },
+    createLoader: {
+        width: 227,
+        backgroundColor: '#252526',
+        borderRadius: 25,
+        padding: 8,
+
     }
+
 });

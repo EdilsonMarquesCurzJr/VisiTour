@@ -30,12 +30,12 @@ export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...pr
                         <Text>Conta</Text>
                     </View>
                     <Link href="/Feed/FeedOptions">
-                    {/* <TouchableOpacity > */}
+                        {/* <TouchableOpacity > */}
                         <View style={styles.optionIcons}>
                             <Ionicons name="md-person" size={20} />
                             <Text>FeedBack</Text>
                         </View>
-                    {/* </TouchableOpacity> */}
+                        {/* </TouchableOpacity> */}
                     </Link>
                     <View style={styles.optionIcons}>
                         <Ionicons name="exit" size={20} />
@@ -51,41 +51,44 @@ export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...pr
 });
 
 const styles = StyleSheet.create({
-  container: {
+    container: {
 
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "gray",
-    width: "50%",
-    height: "100%",
-    zIndex: 1,
-    marginLeft: 0,
-    borderBottomEndRadius: 25,
-    borderTopEndRadius: 25,
-  },
-  userIcon: {
-    justifyContent: "center",
-    verticalAlign: "middle",
-    textAlign: "center",
-    borderBottomColor: "#000",
-    borderWidth: 5,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginTop: -300,
-  },
-  options: {
-    position:"relative",
-    top: 100,
-    rowGap: 25,
-    marginBottom: 80,
-  },
-  optionIcons: {
-    flexDirection: "row",
-    borderBottomWidth: 3,  
-    
-  },
-  backIcon:{
-    marginTop:-200 ,
-  },
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#D9D9D9",
+        width: "50%",
+        height: "100%",
+        zIndex: 1,
+        marginLeft: 0,
+        borderBottomEndRadius: 25,
+        borderTopEndRadius: 25,
+    },
+    userIcon: {
+        justifyContent: "center",
+        verticalAlign: "middle",
+        textAlign: "center",
+        borderBottomColor: "#000",
+        borderWidth: 5,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginTop: -300,
+    },
+    options: {
+        position: "relative",
+        top: 100,
+        rowGap: 25,
+        marginBottom: 80,
+    },
+    optionIcons: {
+        flexDirection: "row",
+        borderBottomWidth: 3,
+
+    },
+    backIcon: {
+        position: 'absolute',
+        top: 40,
+        left: 10,
+
+    },
 });

@@ -7,15 +7,26 @@ const Input = ({ value, onChangeText, label, invalidLabel, ...props }) => {
         <View>
             {label && <Text style={styles.inputLabel}>{label}</Text>}
             {invalidLabel && <Text style={styles.invalidLabel}>{invalidLabel}</Text>}
-            <TextInput style={styles.input}
-                value={value}
-                onChangeText={text => onChangeText(text)}
-                {...props}
-            />
+            <View style={styles.container}>
+                <TextInput style={styles.input}
+                    value={value}
+                    onChangeText={text => onChangeText(text)}
+                    {...props}
+                />
+            </View>
+
         </View>
     );
 };
 const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: "100%",
+        borderRadius: 25,
+        backgroundColor: '#fff',
+
+    },
     inputLabel: {
         fontSize: 16,
         lineHeight: 18,
@@ -28,12 +39,11 @@ const styles = StyleSheet.create({
         color: '#F01E2C'
     },
     input: {
-        width: 227,
-        backgroundColor: '#FFF',
         fontSize: 16,
-        padding: 15,
-        marginTop: 2,
-        borderRadius: 25,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        width: "90%",
+
 
     }
 });

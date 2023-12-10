@@ -1,12 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import Checkbox from "expo-checkbox";
 import React, { useState } from "react";
 import { StateButton } from "../../components/StateButton/StateButton";
-import { RedirectButton } from "../../components/RedirectButton/RedirectButton";
-import { Pressable } from "react-native";
-import { AntDesign } from '@expo/vector-icons';
-import { Stack } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
+import axios from "axios";
+const apiURL = 'http://192.168.1.12:5000/';
 export default function PreferencesPage() {
+    const user = useLocalSearchParams();
     const [isCultural, setIsCultural] = useState(false);
     const [isLazer, setIsLazer] = useState(false);
     const [isFestas, setIsFestas] = useState(false);
@@ -15,6 +15,7 @@ export default function PreferencesPage() {
     const [isNatureza, setIsNatureza] = useState(false);
     const [isCulinariaLocal, setIsCulinariaLocal] = useState(false);
     const [isTeatros, setIsTeatros] = useState(false);
+    const [isSavingPrefs, setIsSavingPrefs] = useState(false);
     const ColumnSection = ({ children, style, ...props }) => {
         return (
             <View  {...props} style={{ flexDirection: 'column', ...style }}>
@@ -42,8 +43,45 @@ export default function PreferencesPage() {
             </View>
         );
     }
-    const savePref = () => {
-        console.log('Salvo');
+    const savePref = async () => {
+        setIsSavingPrefs(true);
+        // console.log(typeof user.id);
+        const prefNames = [];
+        if (isCultural) { prefNames.push('cultural'); }
+        if (isLazer) { prefNames.push('lazer'); }
+        if (isFestas) { prefNames.push('festas'); }
+        if (isReservado) { prefNames.push('reservado'); }
+        if (isLitoral) { prefNames.push('litoral'); }
+        if (isNatureza) { prefNames.push('natureza'); }
+        if (isCulinariaLocal) { prefNames.push('culinaria local'); }
+        if (isTeatros) { prefNames.push('teatros'); }
+        const app = axios.create({
+            baseURL: apiURL
+        });
+        const dataSend = {
+            userId: parseInt(user.id),
+            prefNames
+        }
+        try {
+            const response = await app.post('/user-prefs', dataSend);
+            const { status, data } = response;
+            if (status === 200) {
+                console.log("Adicionado com sucesso");
+                router.replace({
+                    pathname: '/home',
+                    params: user
+                })
+            } else {
+                console.error("Ocorreu um erro ao tentar adicionar as preferências");
+            }
+        } catch (error) {
+            const errorData = error.response.data;
+            if (errorData.type === 'db_process') {
+                console.error('Erro ao criar a conta');
+                console.error(errorData.errors);
+            }
+        }
+        setIsSavingPrefs(false);
     }
     return (
         <View style={styles.container}>
@@ -95,9 +133,18 @@ export default function PreferencesPage() {
 
                     </ColumnSection>
                 </RowSection>
-                <StateButton style={styles.concludeButton} onPress={savePref}>
-                    <Text style={styles.concludeButtonText}>Concluído</Text>
-                </StateButton>
+                {isSavingPrefs === true ? (
+                    <View style={styles.concludeLoader}>
+                        <ActivityIndicator size="large" color="#fff" />
+                    </View>
+
+                ) : (
+                    <StateButton style={styles.concludeButton} onPress={savePref}>
+                        <Text style={styles.concludeButtonText}>Concluído</Text>
+                    </StateButton>
+
+                )}
+
             </ColumnSection>
         </View>
     );
@@ -146,5 +193,12 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: '600',
+    },
+    concludeLoader: {
+        padding: 8,
+        width: 227,
+        backgroundColor: '#252526',
+        borderRadius: 25,
+        marginTop: 10
     }
 });
