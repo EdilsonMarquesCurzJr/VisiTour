@@ -1,118 +1,199 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, TextInput, Image, StyleSheet } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Hamb } from "../Hamb/Hamb";
-import { Link } from "expo-router";
-import { StateButton } from "../StateButton/StateButton";
-const Stack = createStackNavigator();
+import React, { useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, FlatList, ImageBackground } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import axios from "axios";
+import { AntDesign } from '@expo/vector-icons';
 
-const CustomHeaderButton = (props) => (
-  <HeaderButtons {...props} IconComponent={Ionicons} iconSize={23} color="white" />
-);
+export default function Menu({ navigation }) {
+  const apiURL = process.env.EXPO_PUBLIC_API_URL;
+  const [state, setState] = useState({
+    isFetchingFeed: true,
+    feedData: [],
+    isReloadingFeed: false
+  });
+  const route = useRoute();
+  const { params } = route;
+  const dataSend = {
+    name: params.name,
+    email: params.email,
+    password: params.password
+  }
 
-const MenuScreen = ({ navigation }) => {
-  const [texto, setTexto] = useState("");
-  const [hamb, setHamb] = React.useState(true)
+  const fetchRecommendedPlaces = async () => {
+    setState(prevState => ({
+      ...prevState,
+      isFetchingFeed: true
+    }))
+    const app = axios.create({
+      baseURL: apiURL
+    });
+    try {
+      const response = await app.post('/fetch-feed', dataSend);
+      const data = response.data.pontosTuristicos;
+      setState(prevState => ({
+        ...prevState,
+        feedData: data
+      }))
+    } catch (error) {
+      console.log(error);
+    }
+    setState(prevState => ({
+      ...prevState,
+      isFetchingFeed: false
+    }));
+  }
+  useEffect(() => {
+    fetchRecommendedPlaces();
+  }, []);
+  const renderCard = ({ item }) => {
 
+    const data = item;
+    const placeData = {
+      id: String(params.id),
+      descricao: data.descricao,
+      nome: data.nome,
+      image: data.imageUrl,
+      latitude: data.latitude,
+      longitude: data.longitude,
+    }
+    const goToMap = () => {
+      navigation.navigate('PlaceDesc', { placeData });
+    }
+    return (
+      <TouchableOpacity style={MenuScreenStyles.cardContainerSinbling} onPress={goToMap}>
+        <ImageBackground
+          style={MenuScreenStyles.backgroundImage}
+          source={{ uri: item.imageUrl }}
+          borderRadius={20}
+        >
+          <View style={MenuScreenStyles.cardContainer}>
+            <Text style={MenuScreenStyles.cardLabel}>{item.nome}</Text>
+          </View>
+
+        </ImageBackground>
+
+      </TouchableOpacity >
+    );
+  };
+  const ReloaderButton = () => {
+
+    return (
+      <TouchableOpacity onPress={fetchRecommendedPlaces} style={components.reloaderButton}>
+        <AntDesign name="reload1" size={25} color="white" />
+      </TouchableOpacity>
+    )
+  }
+  const dataArray = Object.values(state.feedData);
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Tela do Menu</Text>
+    <View style={MenuScreenStyles.container}>
+      <View style={MenuScreenStyles.greetingContainer}>
+        <Text style={MenuScreenStyles.greetings}>Olá, {params.name}!</Text>
 
+      </View>
+      <View style={MenuScreenStyles.feedContainer}>
+        {state.feedData ? (
+          <Text style={MenuScreenStyles.recomendTitle}>Locais Recomendados!</Text>
 
-      {/* OBS: Coloquei só para poder voltar para a tela de login temporariamente */}
-      <Link href="/" replace={true} style={{ backgroundColor: '#f4a4e4' }}>
-        VOLTAR PARA A TELA DE LOGIN (APAGAR NO FINAL)
-      </Link>
+        ) : (
+          <Text style={MenuScreenStyles.recomendTitle}>Não encontramos locais, para lhe recomendar!</Text>
+
+        )}
+        {state.isFetchingFeed === true ? (
+          <View style={MenuScreenStyles.feedLoader}>
+            <ActivityIndicator size="large" color="#fff" />
+          </View>
+
+        ) : (
+          <>
+            <FlatList
+              data={dataArray}
+              renderItem={renderCard}
+              keyExtractor={(item, index) => index.toString()}
+              style={{ width: "80%", borderRadius: 10 }}
+              ListFooterComponent={ReloaderButton}
+              ListFooterComponentStyle={{
+                alignItems: 'center',
+                justifyContent: "center"
+              }}
+            />
+            <View style={{ elevation: 5, backgroundColor: "#000", width: "80%", height: 1, borderRadius: 100 }}></View>
+          </>
+        )}
+      </View>
     </View>
   );
 };
 
 
-export const Menu = () => {
-  const [texto, setTexto] = useState("");
- 
-  const [hambVisibility, setHambVisibility] = React.useState(false);
 
-  const openHamb = () => {
-    setHambVisibility(true);
-  };
-
-  return (
-    <>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: "#808080",
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: {
-            display: "none", // Oculta o título do cabeçalho
-          },
-        }}
-      >
-        <Stack.Screen
-          name="Menu"
-          component={MenuScreen}
-          options={({ navigation }) => ({
-            title: "",
-            headerLeft: () => (
-              <StateButton style={styles.buttonIcon} onPress={openHamb}>
-                <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-                  <Item title="Pesquisa" iconName="search" onPress={openHamb} />
-                  <Image source={require("../../assets/3line.png")} style={styles.imageIcon} />
-                </HeaderButtons>
-              </StateButton>
-            ),
-            headerRight: () => (
-              <View style={[styles.headerButtonContainer, { marginRight: 15 }]}>
-                <TextInput
-                  style={styles.searchTextInput}
-                  placeholder="busca"
-                  placeholderTextColor="white"
-                />
-                <Ionicons name="search" size={23} color="white" />
-              </View>
-            ),
-          })}
-        />
-      </Stack.Navigator>
-      <Hamb HambVisibility={hambVisibility} setHambVisibility={setHambVisibility} />
-    </>
-  );
-};
-const styles = StyleSheet.create({
+const MenuScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    backgroundColor: '#fff'
   },
-  text: {
+  greetings: {
+    fontSize: 16,
+  },
+  greetingContainer: {
+    marginLeft: "5%",
+    marginTop: "10%"
+  },
+  feedContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: "100%",
+    height: '60%',
+    marginTop: 10
+  },
+  feedLoader: {
+    backgroundColor: "#4E4E4E",
+    padding: 8,
+    borderRadius: 100,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: "10%"
+  },
+  backgroundImage: {
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    elevation: 20,
+  },
+  cardContainer: {
+    height: 204,
+    justifyContent: 'flex-end',
+    // backgroundColor: '#000'
+  },
+  cardContainerSinbling: {
+    marginTop: 5,
+    padding: 10,
+  },
+  recomendTitle: {
+    fontWeight: '600',
     fontSize: 18,
+    alignSelf: 'flex-start',
+    marginLeft: '15%'
   },
-  headerButtonContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  imageIcon: {
-    marginRight: -40,
-    width: 30,
-    height: 30,
-  },
-  searchTextInput: {
-    flex: 1, // Ocupa toda a largura disponível
-    height: 40,
-    borderColor: "white",
-    borderRadius: 25,
-    borderWidth: 1,
-    marginLeft: 10,
-    paddingHorizontal: 10,
-    color: "white",
-    marginRight: 4,
-  },
-  buttonIcon:{
-    
+  cardLabel: {
+    fontWeight: 'bold',
+    color: '#fff',
+    marginLeft: "6%",
+    marginBottom: "3%",
+    fontSize: 17
   }
 });
 
+const components = StyleSheet.create({
+  reloaderButton: {
+    backgroundColor: "#4E4E4E",
+    padding: 8,
+    borderRadius: 100,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
+})

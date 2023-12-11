@@ -74,7 +74,14 @@ export default function CreateAccountPage() {
                     AsyncStorage.setItem('user_id', String(user.id));
                     router.replace({
                         pathname: '/account/preferences',
-                        params: user
+                        params: {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            isAdmin: user.isAdmin,
+                            createdAt: user.createdAt,
+                            password: senha
+                        }
                     });
                 }
             } catch (error) {

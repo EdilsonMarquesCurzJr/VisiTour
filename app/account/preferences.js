@@ -4,9 +4,9 @@ import React, { useState } from "react";
 import { StateButton } from "../../components/StateButton/StateButton";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import axios from "axios";
-const apiURL = 'http://192.168.1.12:5000/';
 export default function PreferencesPage() {
-    const user = useLocalSearchParams();
+    const apiURL = process.env.EXPO_PUBLIC_API_URL;
+    const params = useLocalSearchParams();
     const [isCultural, setIsCultural] = useState(false);
     const [isLazer, setIsLazer] = useState(false);
     const [isFestas, setIsFestas] = useState(false);
@@ -45,7 +45,6 @@ export default function PreferencesPage() {
     }
     const savePref = async () => {
         setIsSavingPrefs(true);
-        // console.log(typeof user.id);
         const prefNames = [];
         if (isCultural) { prefNames.push('cultural'); }
         if (isLazer) { prefNames.push('lazer'); }
@@ -59,17 +58,23 @@ export default function PreferencesPage() {
             baseURL: apiURL
         });
         const dataSend = {
-            userId: parseInt(user.id),
+            userId: parseInt(params.id),
             prefNames
         }
         try {
             const response = await app.post('/user-prefs', dataSend);
             const { status, data } = response;
             if (status === 200) {
-                console.log("Adicionado com sucesso");
                 router.replace({
-                    pathname: '/home',
-                    params: user
+                    pathname: '/home/[id]',
+                    params: {
+                        id: params.id,
+                        name: params.name,
+                        email: params.email,
+                        isAdmin: params.isAdmin,
+                        createdAt: params.createdAt,
+                        password: params.password
+                    }
                 })
             } else {
                 console.error("Ocorreu um erro ao tentar adicionar as preferências");

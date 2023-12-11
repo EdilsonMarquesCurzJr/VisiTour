@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { PermissionsAndroid } from 'react-native';
 import { ModalAccount } from '../ModalAccount/Modal';
 import { StateButton } from '../StateButton/StateButton';
 import axios from 'axios';
@@ -7,44 +8,115 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import Input from '../Input/input';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 export const Login = () => {
-    const [email, setEmail] = React.useState('');
-    const [senha, setSenha] = React.useState('');
-    const [modalVisibility, setModalVisibility] = useState(false);
-    const [isLoggingIn, setIsLoggingIn] = useState(false);
-    const [isInfoVisible, setIsInfoVisible] = useState(false);
-    const [isSenhaValida, setIsSenhaValida] = useState(null);
-    const [senhaValidaLabel, setSenhaValidaLabel] = useState('');
+    const [state, setState] = useState({
+        email: '',
+        senha: '',
+        senhaValidaLabel: '',
+        modalVisibility: false,
+        isLoggingIn: false,
+        isInfoVisible: false,
+        isSenhaValida: null,
+        isPermitted: false
+    });
+    const handleEmailChange = (novoEmail) => {
+        setState(prevState => ({
+            ...prevState,
+            email: novoEmail
+        }))
+    }
+    const handleModalChange = (modalVisibility) => {
+        setState(prevState => ({
+            ...prevState,
+            modalVisibility: modalVisibility
+        }))
+    }
+    const handlePasswordChange = (novoPassword) => {
+        setState(prevState => ({
+            ...prevState,
+            senha: novoPassword
+        }))
+    }
 
     const apiURL = process.env.EXPO_PUBLIC_API_URL;
     const changeModalState = () => {
-        setModalVisibility(true);
+        setState(prevState => ({
+            ...prevState,
+            modalVisibility: true
+        }));
+    }
+    const requestLocationPermission = async () => {
+        try {
+            if (!state.isPermitted) {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                    {
+                        title: 'Permissão de Localização',
+                        message: 'O aplicativo precisa de acesso à sua localização para mostrar o mapa.',
+                        buttonNegative: 'Cancelar',
+                        buttonPositive: 'OK',
+                    },
+                );
+                if (granted === 'granted') {
+                    setState(prevState => ({
+                        ...prevState,
+                        isPermitted: true
+                    }));
+                } else {
+                    setState(prevState => ({
+                        ...prevState,
+                        isPermitted: false
+                    }));
+                }
+
+            }
+        } catch (error) {
+            console.warn(error);
+        }
     }
     useEffect(() => {
-        setIsSenhaValida(true);
-        setSenhaValidaLabel(null);
-    }, [senha])
+        setState(prevState => ({
+            ...prevState,
+            isSenhaValida: true,
+            senhaValidaLabel: null
+        }))
+    }, [state.senha])
     useEffect(() => {
         const loadEmail = async () => {
             const userEmail = await AsyncStorage.getItem('user_email');
-            setEmail(userEmail || '');
+            setState(prevState => ({
+                ...prevState,
+                email: userEmail || ''
+            }));
         };
 
+        requestLocationPermission();
         loadEmail();
     }, []);
     const validaSenha = () => {
+        const senha = state.senha;
         if (senha.length <= 0) {
-            setIsSenhaValida(false);
-            setSenhaValidaLabel('Digite uma senha válida');
+            setState(prevState => ({
+                ...prevState,
+                isSenhaValida: false,
+                senhaValidaLabel: 'Digite uma senha válida'
+            }));
             return false;
         } else {
-            setIsSenhaValida(true);
+            setState(prevState => ({
+                ...prevState,
+                isSenhaValida: true
+            }))
             return true;
         }
     }
     const login = async () => {
         if (!validaSenha()) { return }
-        setIsLoggingIn(true);
+        setState(prevState => ({
+            ...prevState,
+            isLoggingIn: true
+        }))
         let loginToken = await AsyncStorage.getItem('login_token');
         const app = axios.create({
             baseURL: apiURL
@@ -62,8 +134,8 @@ export const Login = () => {
                     });
                 } else {
                     response = await app.post('/user-login', {
-                        email: email,
-                        reqPassword: senha
+                        email: state.email,
+                        reqPassword: state.senha
                     });
                     loginToken = response.data.token;
                     await AsyncStorage.setItem('login_token', loginToken);
@@ -82,6 +154,7 @@ export const Login = () => {
                             email: userInfo.email,
                             isAdmin: userInfo.isAdmin,
                             createdAt: userInfo.createdAt,
+                            password: state.senha
                         }
                     });
                     isLoggedIn = true;
@@ -102,7 +175,10 @@ export const Login = () => {
                 }
             }
         }
-        setIsLoggingIn(false);
+        setState(prevState => ({
+            ...prevState,
+            isLoggingIn: false
+        }))
     };
     return (
         <ImageBackground
@@ -110,28 +186,40 @@ export const Login = () => {
             style={styles.backgroundImage}
         >
             <View style={styles.container}>
-                <Text style={styles.textLogin}>VisiTour</Text>
-                <Input label="Email" value={email} onChangeText={setEmail} placeholder="Digite seu email" autoCapitalize="none" keyboardType='email-address' />
-                <PasswordInput label="Senha" value={senha} onChangeText={setSenha} placeholder="Digite sua sena" autoCapitalize="none" invalidLabel={!isSenhaValida === true ? senhaValidaLabel : null} />
+                {state.isPermitted === true ? (
+                    <>
+                        <Text style={styles.textLogin}>VisiTour</Text>
+                        <Input label="Email" value={state.email} onChangeText={handleEmailChange} placeholder="Digite seu email" autoCapitalize="none" keyboardType='email-address' />
+                        <PasswordInput label="Senha" value={state.senha} onChangeText={handlePasswordChange} placeholder="Digite sua sena" autoCapitalize="none" invalidLabel={!state.isSenhaValida === true ? state.senhaValidaLabel : null} />
 
-                {isLoggingIn === true ? (
-                    <View style={styles.loader}>
-                        <ActivityIndicator size="large" color="#fff" />
-                    </View>
+                        {state.isLoggingIn === true ? (
+                            <View style={styles.loader}>
+                                <ActivityIndicator size="large" color="#fff" />
+                            </View>
+
+                        ) : (
+                            <StateButton style={styles.button} onPress={login}>
+                                <Text style={styles.textButton}>Entrar</Text>
+                            </StateButton>
+
+                        )}
+
+                        <StateButton onPress={changeModalState} style={styles.trocarOuCriarButton}>
+                            <Text style={styles.trocarOuCriarText} className="text-black underline">
+                                Trocar ou criar conta
+                            </Text>
+                        </StateButton>
+                        <ModalAccount modalVisibility={state.modalVisibility} setModalVisibility={handleModalChange} />
+                    </>
 
                 ) : (
-                    <StateButton style={styles.button} onPress={login}>
-                        <Text style={styles.textButton}>Entrar</Text>
-                    </StateButton>
-
+                    <>
+                        <Text style={{ fontSize: 18, alignSelf: 'center' }}>Você precisa aceitar as permissões para usar o app</Text>
+                        <TouchableOpacity style={{}}>
+                            <Text>Permitir</Text>
+                        </TouchableOpacity>
+                    </>
                 )}
-
-                <StateButton onPress={changeModalState} style={styles.trocarOuCriarButton}>
-                    <Text style={styles.trocarOuCriarText} className="text-black underline">
-                        Trocar ou criar conta
-                    </Text>
-                </StateButton>
-                <ModalAccount modalVisibility={modalVisibility} setModalVisibility={setModalVisibility} />
             </View>
 
         </ImageBackground>
