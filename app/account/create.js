@@ -24,7 +24,7 @@ export default function CreateAccountPage() {
     const [isNomeValidLabel, setIsNomeValidLabel] = useState(null);
     const [isCreating, setIsCreating] = useState(false);
 
-    const apiURL = 'http://192.168.1.12:5000/';
+    const apiURL = process.env.EXPO_PUBLIC_API_URL;
     useEffect(() => {
         var senhaLength = senha.length;
         if (senhaLength > 0 && senhaLength < 8) {
