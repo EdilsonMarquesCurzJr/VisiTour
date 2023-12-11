@@ -26,7 +26,7 @@ export default function Home() {
     const [hambVisibility, setHambVisibility] = React.useState(false);
 
     const openHamb = () => {
-        setHambVisibility(true);
+        setHambVisibility(!hambVisibility);
     };
 
     return (

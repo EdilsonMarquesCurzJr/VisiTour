@@ -6,7 +6,16 @@ import { Link, router, useNavigation } from "expo-router";
 export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...props }, ref) => {
     const navigation = useNavigation();  // Use o hook dentro do componente funcional
     const gotToLogin = () => {
+        setHambVisibility(false);
         router.replace('/');
+    }
+    const goToConfig = () => {
+        setHambVisibility(false);
+        router.push('/account/config');
+    }
+    const goToFeedback = () => {
+        setHambVisibility(false);
+        router.push('/Feed/FeedOptions');
     }
     return (
         <Modal
@@ -23,22 +32,22 @@ export const Hamb = React.forwardRef(({ HambVisibility, setHambVisibility, ...pr
                 <Ionicons style={styles.userIcon} name="md-person" size={24} color="black" />
                 <Text>Usuário</Text>
                 <View style={styles.options}>
-                    <View style={styles.optionIcons}>
-                        <Ionicons name="settings" size={20} />
-                        <Text>Configuração</Text>
-                    </View>
+                    <TouchableOpacity onPress={goToConfig}>
+                        <View style={styles.optionIcons}>
+                            <Ionicons name="settings" size={20} />
+                            <Text>Configuração</Text>
+                        </View>
+                    </TouchableOpacity>
                     <View style={styles.optionIcons}>
                         <Ionicons name="md-person" size={20} />
                         <Text>Conta</Text>
                     </View>
-                    <Link href="/Feed/FeedOptions">
-                        {/* <TouchableOpacity > */}
+                    <TouchableOpacity onPress={goToFeedback}>
                         <View style={styles.optionIcons}>
                             <Ionicons name="md-person" size={20} />
-                            <Text>FeedBack</Text>
+                            <Text>Feedback</Text>
                         </View>
-                        {/* </TouchableOpacity> */}
-                    </Link>
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={gotToLogin}>
                         <View style={styles.optionIcons}>
                             <Ionicons name="exit" size={20} />

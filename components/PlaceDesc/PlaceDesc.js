@@ -1,4 +1,4 @@
-import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack } from "expo-router";
 export default function PlaceDescPage({ navigation, route }) {

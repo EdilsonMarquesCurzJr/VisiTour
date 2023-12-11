@@ -8,20 +8,6 @@ export default function Map({ navigation, route }) {
     const { latitude, longitude } = data;
     return (
         <View style={styles.container}>
-            <Stack.Screen
-                options={{
-                    title: data.nome,
-                    headerStyle: { backgroundColor: '#D2D5D8' },
-                    headerTintColor: '#000',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                    },
-                    headerTitleAlign: 'center',
-                    headerShown: true,
-                    headerTransparent: true,
-
-                }}
-            />
             <MapView
                 style={styles.map}
                 initialRegion={{
@@ -43,6 +29,20 @@ export default function Map({ navigation, route }) {
                     pinColor="#000"
                 />
             </MapView>
+            <Stack.Screen
+                options={{
+                    title: data.nome,
+                    headerStyle: { backgroundColor: '#D2D5D8' },
+                    headerTintColor: '#000',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                    },
+                    headerTitleAlign: 'center',
+                    headerShown: true,
+                    headerTransparent: true,
+
+                }}
+            />
         </View>
     )
 

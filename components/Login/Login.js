@@ -48,7 +48,7 @@ export const Login = () => {
     }
     const requestLocationPermission = async () => {
         try {
-            if (!state.isPermitted) {
+            if (state.isPermitted === false) {
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
                     {
@@ -70,6 +70,11 @@ export const Login = () => {
                     }));
                 }
 
+            } else {
+                setState(prevState => ({
+                    ...prevState,
+                    isPermitted: true
+                }));
             }
         } catch (error) {
             console.warn(error);
@@ -146,6 +151,7 @@ export const Login = () => {
 
                 if (isLoginValid) {
                     await AsyncStorage.setItem('user_email', response.data.user.email);
+                    await AsyncStorage.setItem('user_pass', state.senha);
                     router.replace({
                         pathname: '/home/[id]',
                         params: {
@@ -171,6 +177,10 @@ export const Login = () => {
                     loginToken = null;
                 } else {
                     console.error(errorData);
+                    setState(prevState => ({
+                        ...prevState,
+                        isLoggingIn: false
+                    }))
                     break;
                 }
             }
