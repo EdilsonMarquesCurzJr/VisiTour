@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { PermissionsAndroid } from 'react-native';
+import { ActivityIndicator, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { ModalAccount } from '../ModalAccount/Modal';
 import { StateButton } from '../StateButton/StateButton';
 import axios from 'axios';
@@ -8,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import Input from '../Input/input';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 export const Login = () => {
     const [state, setState] = useState({
         email: '',
@@ -18,7 +16,6 @@ export const Login = () => {
         isLoggingIn: false,
         isInfoVisible: false,
         isSenhaValida: null,
-        isPermitted: false
     });
     const handleEmailChange = (novoEmail) => {
         setState(prevState => ({
@@ -46,40 +43,6 @@ export const Login = () => {
             modalVisibility: true
         }));
     }
-    const requestLocationPermission = async () => {
-        try {
-            if (state.isPermitted === false) {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-                    {
-                        title: 'Permissão de Localização',
-                        message: 'O aplicativo precisa de acesso à sua localização para mostrar o mapa.',
-                        buttonNegative: 'Cancelar',
-                        buttonPositive: 'OK',
-                    },
-                );
-                if (granted === 'granted') {
-                    setState(prevState => ({
-                        ...prevState,
-                        isPermitted: true
-                    }));
-                } else {
-                    setState(prevState => ({
-                        ...prevState,
-                        isPermitted: false
-                    }));
-                }
-
-            } else {
-                setState(prevState => ({
-                    ...prevState,
-                    isPermitted: true
-                }));
-            }
-        } catch (error) {
-            console.warn(error);
-        }
-    }
     useEffect(() => {
         setState(prevState => ({
             ...prevState,
@@ -95,8 +58,6 @@ export const Login = () => {
                 email: userEmail || ''
             }));
         };
-
-        requestLocationPermission();
         loadEmail();
     }, []);
     const validaSenha = () => {
@@ -196,40 +157,32 @@ export const Login = () => {
             style={styles.backgroundImage}
         >
             <View style={styles.container}>
-                {state.isPermitted === true ? (
-                    <>
-                        <Text style={styles.textLogin}>VisiTour</Text>
-                        <Input label="Email" value={state.email} onChangeText={handleEmailChange} placeholder="Digite seu email" autoCapitalize="none" keyboardType='email-address' />
-                        <PasswordInput label="Senha" value={state.senha} onChangeText={handlePasswordChange} placeholder="Digite sua sena" autoCapitalize="none" invalidLabel={!state.isSenhaValida === true ? state.senhaValidaLabel : null} />
 
-                        {state.isLoggingIn === true ? (
-                            <View style={styles.loader}>
-                                <ActivityIndicator size="large" color="#fff" />
-                            </View>
+                <>
+                    <Text style={styles.textLogin}>VisiTour</Text>
+                    <Input label="Email" value={state.email} onChangeText={handleEmailChange} placeholder="Digite seu email" autoCapitalize="none" keyboardType='email-address' />
+                    <PasswordInput label="Senha" value={state.senha} onChangeText={handlePasswordChange} placeholder="Digite sua sena" autoCapitalize="none" invalidLabel={!state.isSenhaValida === true ? state.senhaValidaLabel : null} />
 
-                        ) : (
-                            <StateButton style={styles.button} onPress={login}>
-                                <Text style={styles.textButton}>Entrar</Text>
-                            </StateButton>
+                    {state.isLoggingIn === true ? (
+                        <View style={styles.loader}>
+                            <ActivityIndicator size="large" color="#fff" />
+                        </View>
 
-                        )}
-
-                        <StateButton onPress={changeModalState} style={styles.trocarOuCriarButton}>
-                            <Text style={styles.trocarOuCriarText} className="text-black underline">
-                                Trocar ou criar conta
-                            </Text>
+                    ) : (
+                        <StateButton style={styles.button} onPress={login}>
+                            <Text style={styles.textButton}>Entrar</Text>
                         </StateButton>
-                        <ModalAccount modalVisibility={state.modalVisibility} setModalVisibility={handleModalChange} />
-                    </>
 
-                ) : (
-                    <>
-                        <Text style={{ fontSize: 18, alignSelf: 'center' }}>Você precisa aceitar as permissões para usar o app</Text>
-                        <TouchableOpacity style={{}}>
-                            <Text>Permitir</Text>
-                        </TouchableOpacity>
-                    </>
-                )}
+                    )}
+
+                    <StateButton onPress={changeModalState} style={styles.trocarOuCriarButton}>
+                        <Text style={styles.trocarOuCriarText} className="text-black underline">
+                            Trocar ou criar conta
+                        </Text>
+                    </StateButton>
+                    <ModalAccount modalVisibility={state.modalVisibility} setModalVisibility={handleModalChange} />
+                </>
+
             </View>
 
         </ImageBackground>
